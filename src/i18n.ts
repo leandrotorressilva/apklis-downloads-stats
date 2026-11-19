@@ -18,7 +18,7 @@ const es = {
   'login.submit': 'Entrar',
   'login.submitting': 'Entrando…',
   'login.privacy': 'No guardamos tus credenciales: se envían a la API de Apklis y solo la sesión queda en este navegador.',
-  'login.source': 'Código abierto en GitHub',
+  'footer.source': 'Código en GitHub',
 
   'dashboard.eyebrow': 'Tus apps en Apklis',
   'dashboard.title': 'Descargas',
@@ -79,7 +79,7 @@ const en: Record<MessageKey, string> = {
   'login.submit': 'Sign in',
   'login.submitting': 'Signing in…',
   'login.privacy': 'We never store your credentials: they go to the Apklis API and only the session stays in this browser.',
-  'login.source': 'Open source on GitHub',
+  'footer.source': 'Source on GitHub',
 
   'dashboard.eyebrow': 'Your apps on Apklis',
   'dashboard.title': 'Downloads',

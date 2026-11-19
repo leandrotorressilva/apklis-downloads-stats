@@ -84,10 +84,34 @@ export function packageIdFromIcon(icon: string) {
   return file.replace(/-v\d+\.\w+$/, '') || null
 }
 
-/** Unique package ids of the apps listed in the account summary. */
-export function packageIdsFromResume(resume: Resume): string[] {
-  const ids = [...resume.top_downloads, ...resume.top_releases].map((app) => packageIdFromIcon(String(app?.icon ?? '')))
-  return [...new Set(ids.filter((id): id is string => !!id))]
+export interface AppInfo {
+  packageId: string
+  name: string
+  icon: string
+}
+
+/** Apps listed in the account summary, without duplicates. */
+export function appsFromResume(resume: Resume): AppInfo[] {
+  const apps = new Map<string, AppInfo>()
+  for (const app of [...resume.top_downloads, ...resume.top_releases]) {
+    const icon = String(app?.icon ?? '')
+    const packageId = packageIdFromIcon(icon)
+    if (packageId && !apps.has(packageId)) apps.set(packageId, { packageId, name: String(app.name ?? ''), icon })
+  }
+  return [...apps.values()]
+}
+
+/**
+ * Icon lookup for the per-app histogram, which reports apps by name. Keyed by
+ * lower-cased name and also by package id, in case the API reports ids.
+ */
+export function iconsByApp(apps: AppInfo[]): Map<string, string> {
+  const icons = new Map<string, string>()
+  for (const app of apps) {
+    icons.set(app.packageId.toLowerCase(), app.icon)
+    if (app.name) icons.set(app.name.toLowerCase(), app.icon)
+  }
+  return icons
 }
 
 export interface AppStats {

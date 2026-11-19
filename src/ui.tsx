@@ -16,10 +16,12 @@ import { useTheme, type ThemePreference } from './theme'
 
 // ── Shell ────────────────────────────────────────────────────────────────────
 
+const SOURCE_URL = 'https://github.com/leandrotorressilva/apklis-downloads-stats'
+
 export function Shell({ onLogout, children }: { onLogout?: () => void; children: ReactNode }) {
   const { t } = useI18n()
   return (
-    <>
+    <div className="shell">
       <header className="shell-header">
         <span className="brand">
           <span className="brand-mark squircle">
@@ -38,7 +40,18 @@ export function Shell({ onLogout, children }: { onLogout?: () => void; children:
         </div>
       </header>
       <main className="shell-main">{children}</main>
-    </>
+      <footer className="shell-footer">
+        <span>
+          © 2026{' '}
+          <a href="https://kuantyk.com" target="_blank" rel="noreferrer">
+            KUANTYK
+          </a>
+        </span>
+        <a href={SOURCE_URL} target="_blank" rel="noreferrer">
+          {t('footer.source')}
+        </a>
+      </footer>
+    </div>
   )
 }
 

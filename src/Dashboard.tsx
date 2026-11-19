@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { freshSession, getHistogram, getResume, isUnauthorized, refresh, type HistogramPoint, type Session } from './api'
 import { errorMessageKey, useI18n } from './i18n'
 import { AlertIcon, DownloadIcon, RefreshIcon, SpinnerIcon } from './icons'
-import { apklisToday, appStats, lastDays, packageIdsFromResume, periods, total, type Period } from './stats'
+import { apklisToday, appsFromResume, appStats, iconsByApp, lastDays, periods, total, type Period } from './stats'
 import { PageHeader, Shell, StatusPanel, TrendPill } from './ui'
 
 interface Data {
@@ -10,6 +10,8 @@ interface Data {
   all: HistogramPoint[]
   /** Daily downloads broken down by app (by name), for the package ids found in the summary. */
   byApp: HistogramPoint[]
+  /** App icons from the summary, by lower-cased name or package id. */
+  icons: Map<string, string>
   /** Calendar day in Cuba when the data was loaded (see `apklisToday`). */
   today: Date
 }
@@ -31,9 +33,9 @@ export default function Dashboard({ session, onSession, onLogout }: Props) {
     setError(null)
     const fetchAll = async (s: Session) => {
       const [all, resume] = await Promise.all([getHistogram(s), getResume(s)])
-      const packageIds = packageIdsFromResume(resume)
-      const byApp = packageIds.length ? await getHistogram(s, packageIds) : []
-      setData({ all, byApp, today: apklisToday() })
+      const apps = appsFromResume(resume)
+      const byApp = apps.length ? await getHistogram(s, apps.map((app) => app.packageId)) : []
+      setData({ all, byApp, icons: iconsByApp(apps), today: apklisToday() })
     }
     try {
       let current = await freshSession(session)
@@ -127,7 +129,7 @@ function Stats({ data }: { data: Data }) {
       </section>
 
       <WeekChart all={data.all} today={today} />
-      <AppsSection byApp={data.byApp} todayTotal={summary.find((p) => p.id === 'today')?.value ?? 0} today={today} />
+      <AppsSection byApp={data.byApp} icons={data.icons} todayTotal={summary.find((p) => p.id === 'today')?.value ?? 0} today={today} />
     </>
   )
 }
@@ -193,7 +195,14 @@ function WeekChart({ all, today }: { all: HistogramPoint[]; today: Date }) {
   )
 }
 
-function AppsSection({ byApp, todayTotal, today }: { byApp: HistogramPoint[]; todayTotal: number; today: Date }) {
+interface AppsSectionProps {
+  byApp: HistogramPoint[]
+  icons: Map<string, string>
+  todayTotal: number
+  today: Date
+}
+
+function AppsSection({ byApp, icons, todayTotal, today }: AppsSectionProps) {
   const { t, formatNumber } = useI18n()
   const apps = useMemo(() => appStats(byApp, today), [byApp, today])
 
@@ -227,8 +236,11 @@ function AppsSection({ byApp, todayTotal, today }: { byApp: HistogramPoint[]; to
               {apps.map((app) => (
                 <tr key={app.name}>
                   <th scope="row">
-                    <span className="app-name" title={app.name}>
-                      {app.name}
+                    <span className="app-cell">
+                      <AppIcon name={app.name} src={icons.get(app.name.toLowerCase())} />
+                      <span className="app-name" title={app.name}>
+                        {app.name}
+                      </span>
                     </span>
                   </th>
                   <td className="tabular is-sorted">
@@ -250,6 +262,31 @@ function AppsSection({ byApp, todayTotal, today }: { byApp: HistogramPoint[]; to
         </div>
       )}
     </section>
+  )
+}
+
+/** App icon from Apklis, falling back to the app's initial when there is none or it fails to load. */
+function AppIcon({ name, src }: { name: string; src?: string }) {
+  const [failed, setFailed] = useState(false)
+  if (!src || failed) {
+    return (
+      <span className="app-icon app-icon-fallback squircle" aria-hidden="true">
+        {(name.replace(/[^\p{L}\p{N}]/gu, '')[0] ?? '?').toUpperCase()}
+      </span>
+    )
+  }
+  return (
+    <img
+      className="app-icon squircle"
+      src={src}
+      alt=""
+      width={32}
+      height={32}
+      loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
+      onError={() => setFailed(true)}
+    />
   )
 }
 

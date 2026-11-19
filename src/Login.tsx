@@ -4,8 +4,6 @@ import { errorMessageKey, useI18n, type MessageKey } from './i18n'
 import { AlertIcon, LockIcon, SpinnerIcon } from './icons'
 import { Shell } from './ui'
 
-const SOURCE_URL = 'https://github.com/leandrotorressilva/apklis-downloads-stats'
-
 export default function Login({ onLogin }: { onLogin: (session: Session) => void }) {
   const { t } = useI18n()
   const [username, setUsername] = useState('')
@@ -80,12 +78,7 @@ export default function Login({ onLogin }: { onLogin: (session: Session) => void
 
         <p className="login-note">
           <LockIcon />
-          <span>
-            {t('login.privacy')}{' '}
-            <a href={SOURCE_URL} target="_blank" rel="noreferrer">
-              {t('login.source')}
-            </a>
-          </span>
+          <span>{t('login.privacy')}</span>
         </p>
       </div>
     </Shell>

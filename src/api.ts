@@ -28,13 +28,18 @@ export interface HistogramPoint {
   apps: AppCount[]
 }
 
+export interface ResumeApp {
+  name?: string
+  icon?: string
+}
+
 /**
- * Account summary. Only used to discover the developer's package ids, taken from
- * the icon URLs of the top 10 apps by downloads and the top 10 by releases.
+ * Account summary. Used to discover the developer's apps (package id and icon)
+ * from the top 10 apps by downloads and the top 10 by releases.
  */
 export interface Resume {
-  top_downloads: { icon?: string }[]
-  top_releases: { icon?: string }[]
+  top_downloads: ResumeApp[]
+  top_releases: ResumeApp[]
 }
 
 export type ApiErrorCode = 'INVALID_CREDENTIALS' | 'UNAUTHORIZED' | 'NETWORK' | 'SERVER'

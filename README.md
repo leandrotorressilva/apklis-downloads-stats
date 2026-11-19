@@ -88,7 +88,7 @@ src/
 └── index.css      Design tokens and styles
 ```
 
-The visual identity — flat, matte, squircle corners, violet and lime — is documented in [`DESIGN.md`](DESIGN.md) (in Spanish). Please follow it when changing the UI.
+The design tokens (colors for light and dark themes, radii, typography) live at the top of `src/index.css`. Please reuse them when changing the UI instead of hard-coding colors.
 
 ## Contributing
 

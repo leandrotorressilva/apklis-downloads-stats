@@ -44,8 +44,9 @@ const es = {
 
 
   'apps.title': 'Estadísticas de hoy',
-  'apps.subtitle': '{count} descargas hoy entre todas tus apps, de más a menos.',
-  'apps.subtitle_one': '{count} descarga hoy entre todas tus apps.',
+  'apps.subtitle': '{count} descargas hoy, de más a menos.',
+  'apps.subtitle_one': '{count} descarga hoy.',
+  'apps.emptyOthers': 'Las descargas de hoy son de apps que no aparecen en tu resumen de Apklis.',
   'apps.app': 'App',
   'apps.today': 'Hoy',
   'apps.week': '7 días',
@@ -104,8 +105,9 @@ const en: Record<MessageKey, string> = {
 
 
   'apps.title': 'Today’s stats',
-  'apps.subtitle': '{count} downloads today across all your apps, from most to least.',
-  'apps.subtitle_one': '{count} download today across all your apps.',
+  'apps.subtitle': '{count} downloads today, from most to least.',
+  'apps.subtitle_one': '{count} download today.',
+  'apps.emptyOthers': 'Today’s downloads come from apps that aren’t listed in your Apklis summary.',
   'apps.app': 'App',
   'apps.today': 'Today',
   'apps.week': '7 days',

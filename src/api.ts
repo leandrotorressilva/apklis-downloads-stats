@@ -28,6 +28,15 @@ export interface HistogramPoint {
   apps: AppCount[]
 }
 
+/**
+ * Account summary. Only used to discover the developer's package ids, taken from
+ * the icon URLs of the top 10 apps by downloads and the top 10 by releases.
+ */
+export interface Resume {
+  top_downloads: { icon?: string }[]
+  top_releases: { icon?: string }[]
+}
+
 export type ApiErrorCode = 'INVALID_CREDENTIALS' | 'UNAUTHORIZED' | 'NETWORK' | 'SERVER'
 
 export class ApiError extends Error {
@@ -133,4 +142,13 @@ export async function getHistogram(session: Session, apps: string[] = []): Promi
   const data = await authorizedPost(session, '/v3/dashboard/histogram/', { apps, type: 'day' })
   if (!Array.isArray(data)) throw new ApiError('SERVER')
   return data as HistogramPoint[]
+}
+
+export async function getResume(session: Session): Promise<Resume> {
+  const data = (await authorizedPost(session, '/v3/dashboard/resume/')) as Partial<Resume> | null
+  if (!data || typeof data !== 'object') throw new ApiError('SERVER')
+  return {
+    top_downloads: Array.isArray(data.top_downloads) ? data.top_downloads : [],
+    top_releases: Array.isArray(data.top_releases) ? data.top_releases : [],
+  }
 }

@@ -3,6 +3,8 @@
     { "source": "/apklis/o/token", "destination": "https://api.apklis.cu/o/token/" },
     { "source": "/apklis/o/token/", "destination": "https://api.apklis.cu/o/token/" },
     { "source": "/apklis/v3/dashboard/histogram", "destination": "https://api.apklis.cu/v3/dashboard/histogram/" },
-    { "source": "/apklis/v3/dashboard/histogram/", "destination": "https://api.apklis.cu/v3/dashboard/histogram/" }
+    { "source": "/apklis/v3/dashboard/histogram/", "destination": "https://api.apklis.cu/v3/dashboard/histogram/" },
+    { "source": "/apklis/v3/dashboard/resume", "destination": "https://api.apklis.cu/v3/dashboard/resume/" },
+    { "source": "/apklis/v3/dashboard/resume/", "destination": "https://api.apklis.cu/v3/dashboard/resume/" }
   ]
 }

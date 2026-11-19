@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { freshSession, getHistogram, isUnauthorized, refresh, type HistogramPoint, type Session } from './api'
+import { freshSession, getHistogram, getResume, isUnauthorized, refresh, type HistogramPoint, type Session } from './api'
 import { errorMessageKey, useI18n } from './i18n'
 import { AlertIcon, DownloadIcon, RefreshIcon, SpinnerIcon } from './icons'
-import { apklisToday, appStats, lastDays, periods, total, type Period } from './stats'
+import { apklisToday, appStats, lastDays, packageIdsFromResume, periods, total, type Period } from './stats'
 import { PageHeader, Shell, StatusPanel, TrendPill } from './ui'
 
 interface Data {
-  /** Daily histogram; each day also carries the per-app breakdown by name. */
+  /** Daily downloads of the whole account. */
   all: HistogramPoint[]
+  /** Daily downloads broken down by app (by name), for the package ids found in the summary. */
+  byApp: HistogramPoint[]
   /** Calendar day in Cuba when the data was loaded (see `apklisToday`). */
   today: Date
 }
@@ -28,7 +30,10 @@ export default function Dashboard({ session, onSession, onLogout }: Props) {
     setLoading(true)
     setError(null)
     const fetchAll = async (s: Session) => {
-      setData({ all: await getHistogram(s), today: apklisToday() })
+      const [all, resume] = await Promise.all([getHistogram(s), getResume(s)])
+      const packageIds = packageIdsFromResume(resume)
+      const byApp = packageIds.length ? await getHistogram(s, packageIds) : []
+      setData({ all, byApp, today: apklisToday() })
     }
     try {
       let current = await freshSession(session)
@@ -122,7 +127,7 @@ function Stats({ data }: { data: Data }) {
       </section>
 
       <WeekChart all={data.all} today={today} />
-      <AppsSection all={data.all} today={today} />
+      <AppsSection byApp={data.byApp} todayTotal={summary.find((p) => p.id === 'today')?.value ?? 0} today={today} />
     </>
   )
 }
@@ -188,9 +193,9 @@ function WeekChart({ all, today }: { all: HistogramPoint[]; today: Date }) {
   )
 }
 
-function AppsSection({ all, today }: { all: HistogramPoint[]; today: Date }) {
+function AppsSection({ byApp, todayTotal, today }: { byApp: HistogramPoint[]; todayTotal: number; today: Date }) {
   const { t, formatNumber } = useI18n()
-  const apps = useMemo(() => appStats(all, today), [all, today])
+  const apps = useMemo(() => appStats(byApp, today), [byApp, today])
 
   return (
     <section className="section" aria-labelledby="apps-title">
@@ -198,11 +203,14 @@ function AppsSection({ all, today }: { all: HistogramPoint[]; today: Date }) {
         <h2 id="apps-title" className="panel-title">
           {t('apps.title')}
         </h2>
-        <p className="muted small tabular">{t('apps.subtitle', { count: apps.reduce((sum, app) => sum + app.today, 0) })}</p>
+        {apps.length > 0 && (
+          <p className="muted small tabular">{t('apps.subtitle', { count: apps.reduce((sum, app) => sum + app.today, 0) })}</p>
+        )}
       </div>
 
       {apps.length === 0 ? (
-        <p className="panel-empty">{t('apps.empty')}</p>
+        // Downloads today can come from apps outside the summary's top lists.
+        <p className="panel-empty">{t(todayTotal > 0 ? 'apps.emptyOthers' : 'apps.empty')}</p>
       ) : (
         <div className="table-card">
           <table className="app-table">

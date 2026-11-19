@@ -1,4 +1,4 @@
-import type { HistogramPoint } from './api'
+import type { HistogramPoint, Resume } from './api'
 
 /*
  * Apklis counts downloads per calendar day in Cuba, so "today" is always the
@@ -77,6 +77,18 @@ export function lastDays(data: HistogramPoint[], days: number, today: Date): Day
 }
 
 // ── Apps ─────────────────────────────────────────────────────────────────────
+
+/** Package id from an Apklis icon URL such as `…/icon/com.example.app-v12.png`. */
+export function packageIdFromIcon(icon: string) {
+  const file = icon.split('?')[0].split('/').pop() ?? ''
+  return file.replace(/-v\d+\.\w+$/, '') || null
+}
+
+/** Unique package ids of the apps listed in the account summary. */
+export function packageIdsFromResume(resume: Resume): string[] {
+  const ids = [...resume.top_downloads, ...resume.top_releases].map((app) => packageIdFromIcon(String(app?.icon ?? '')))
+  return [...new Set(ids.filter((id): id is string => !!id))]
+}
 
 export interface AppStats {
   /** Name as reported by the per-app histogram. */

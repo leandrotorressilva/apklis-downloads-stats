@@ -9,7 +9,7 @@ Sign in with your Apklis developer account (the one you use on `console.apklis.c
 - **Total downloads** of all your apps.
 - **Last 365, 30 and 7 days, and today**, each compared with the previous period of the same length.
 - **The last 7 days** day by day, with your best day highlighted.
-- **Today's stats by app**: every app with downloads today, with today vs. yesterday and the last 7 days vs. the 7 before.
+- **Today's stats by app**: your apps with downloads today, with today vs. yesterday and the last 7 days vs. the 7 before.
 
 It is built with React, TypeScript and plain CSS — no UI framework, no tracking, no backend of its own. Spanish and English, light and dark themes.
 
@@ -19,7 +19,11 @@ The app talks directly to the official Apklis API (`api.apklis.cu`), the same on
 
 1. You sign in with your Apklis username and password. They are sent to the Apklis OAuth endpoint and **never stored**.
 2. Only the resulting session token is saved in your browser (`localStorage`) and refreshed automatically when it expires.
-3. Stats come from a single call to the `/v3/dashboard/histogram/` endpoint, which returns the daily downloads of the account broken down by app.
+3. Stats come from two endpoints:
+   - `/v3/dashboard/histogram/` — daily downloads of the whole account, and the same broken down by app for the given package ids.
+   - `/v3/dashboard/resume/` — the account summary, used only to find your package ids (taken from the app icon URLs).
+
+> The summary lists your top 10 apps by downloads and your top 10 by releases, so if you have more apps than that, the ones outside both lists won't appear in **Today's stats by app**.
 
 Days follow Cuba's time zone (`America/Havana`), as Apklis does: "today" is the current date in Cuba wherever you open the dashboard.
 

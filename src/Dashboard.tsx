@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { freshSession, getHistogram, isUnauthorized, refresh, type HistogramPoint, type Session } from './api'
 import { errorMessageKey, useI18n } from './i18n'
 import { AlertIcon, DownloadIcon, RefreshIcon, SpinnerIcon } from './icons'
-import { appStats, lastDays, periods, total, type Period } from './stats'
+import { apklisToday, appStats, lastDays, periods, total, type Period } from './stats'
 import { PageHeader, Shell, StatusPanel, TrendPill } from './ui'
 
 interface Data {
   /** Daily histogram; each day also carries the per-app breakdown by name. */
   all: HistogramPoint[]
-  loadedAt: Date
+  /** Calendar day in Cuba when the data was loaded (see `apklisToday`). */
+  today: Date
 }
 
 interface Props {
@@ -27,7 +28,7 @@ export default function Dashboard({ session, onSession, onLogout }: Props) {
     setLoading(true)
     setError(null)
     const fetchAll = async (s: Session) => {
-      setData({ all: await getHistogram(s), loadedAt: new Date() })
+      setData({ all: await getHistogram(s), today: apklisToday() })
     }
     try {
       let current = await freshSession(session)
@@ -99,7 +100,7 @@ export default function Dashboard({ session, onSession, onLogout }: Props) {
 
 function Stats({ data }: { data: Data }) {
   const { t, formatNumber } = useI18n()
-  const today = data.loadedAt
+  const today = data.today
   const summary = useMemo(() => periods(data.all, today), [data.all, today])
   const allTime = useMemo(() => total(data.all), [data.all])
 
@@ -170,7 +171,7 @@ function WeekChart({ all, today }: { all: HistogramPoint[]; today: Date }) {
               </span>
               <span className={`chart-label${isToday ? ' is-today' : ''}`} aria-hidden="true">
                 <span className="micro">{formatDate(day.date, { weekday: 'short' })}</span>
-                <span className="chart-day tabular">{day.date.getDate()}</span>
+                <span className="chart-day tabular">{day.date.getUTCDate()}</span>
               </span>
             </li>
           )

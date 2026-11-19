@@ -1,14 +1,31 @@
 import type { HistogramPoint } from './api'
 
-const pad = (n: number) => String(n).padStart(2, '0')
+/*
+ * Apklis counts downloads per calendar day in Cuba, so "today" is always the
+ * current date in Havana, wherever the viewer is. Calendar days are handled as
+ * Dates at 12:00 UTC of that day and all day arithmetic uses UTC, which keeps
+ * it independent from the browser's time zone (and from daylight saving time).
+ */
+export const APKLIS_TIME_ZONE = 'America/Havana'
 
-/** `YYYY-MM-DD` key of a date in local time. */
-export const dayKey = (date: Date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+/** Today's calendar date in Cuba, as 12:00 UTC of that day. */
+export function apklisToday(now = new Date()): Date {
+  const key = new Intl.DateTimeFormat('en-CA', {
+    timeZone: APKLIS_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now)
+  return new Date(`${key}T12:00:00Z`)
+}
 
-/** The date `days` days before `from`. */
+/** `YYYY-MM-DD` key of a calendar day. */
+export const dayKey = (date: Date) => date.toISOString().slice(0, 10)
+
+/** The calendar day `days` days before `from`. */
 export function daysAgo(days: number, from: Date) {
   const date = new Date(from)
-  date.setDate(date.getDate() - days)
+  date.setUTCDate(date.getUTCDate() - days)
   return date
 }
 

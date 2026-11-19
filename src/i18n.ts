@@ -174,7 +174,8 @@ export function createI18n(lang: Lang, setLang: (lang: Lang) => void): I18n {
     },
     formatNumber: (value) => numbers.format(value),
     formatPercent: (value) => percents.format(value),
-    formatDate: (date, options) => date.toLocaleDateString(lang, options),
+    // Calendar days are stored as 12:00 UTC (see stats.ts), so format them in UTC.
+    formatDate: (date, options) => date.toLocaleDateString(lang, { ...options, timeZone: 'UTC' }),
   }
 }
 

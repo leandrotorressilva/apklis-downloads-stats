@@ -2,12 +2,14 @@
 
 A clean, open-source dashboard for **developers** who publish apps on [Apklis](https://www.apklis.cu), the Cuban Android app store. It is a lighter view of the download stats you get in the [Apklis developer console](https://console.apklis.cu).
 
+**Try it live:** <https://apklis-downloads-stats.vercel.app/>
+
 Sign in with your Apklis developer account (the one you use on `console.apklis.cu`) and see, at a glance:
 
 - **Total downloads** of all your apps.
 - **Last 365, 30 and 7 days, and today**, each compared with the previous period of the same length.
 - **The last 7 days** day by day, with your best day highlighted.
-- **Today by app**: every app with downloads today, with today vs. yesterday and the last 7 days vs. the 7 before.
+- **Today's stats by app**: every app with downloads today, with today vs. yesterday and the last 7 days vs. the 7 before.
 
 It is built with React, TypeScript and plain CSS — no UI framework, no tracking, no backend of its own. Spanish and English, light and dark themes.
 
@@ -18,6 +20,8 @@ The app talks directly to the official Apklis API (`api.apklis.cu`), the same on
 1. You sign in with your Apklis username and password. They are sent to the Apklis OAuth endpoint and **never stored**.
 2. Only the resulting session token is saved in your browser (`localStorage`) and refreshed automatically when it expires.
 3. Stats come from a single call to the `/v3/dashboard/histogram/` endpoint, which returns the daily downloads of the account broken down by app.
+
+Days follow Cuba's time zone (`America/Havana`), as Apklis does: "today" is the current date in Cuba wherever you open the dashboard.
 
 The Apklis API does not allow cross-origin requests, so the browser calls `/apklis/*` on the same origin and that path is proxied to `https://api.apklis.cu/*`: by Vite during development and by the hosting provider in production (see [Deployment](#deployment)).
 

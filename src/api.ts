@@ -28,12 +28,6 @@ export interface HistogramPoint {
   apps: AppCount[]
 }
 
-/** Package ids of the apps shown in the per-app table (see `.env.example`). */
-export const PACKAGE_IDS: string[] = (import.meta.env.VITE_APKLIS_APPS ?? '')
-  .split(',')
-  .map((id) => id.trim())
-  .filter(Boolean)
-
 export type ApiErrorCode = 'INVALID_CREDENTIALS' | 'UNAUTHORIZED' | 'NETWORK' | 'SERVER'
 
 export class ApiError extends Error {

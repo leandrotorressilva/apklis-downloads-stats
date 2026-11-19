@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { freshSession, getHistogram, isUnauthorized, PACKAGE_IDS, refresh, type HistogramPoint, type Session } from './api'
+import { freshSession, getHistogram, isUnauthorized, refresh, type HistogramPoint, type Session } from './api'
 import { errorMessageKey, useI18n } from './i18n'
 import { AlertIcon, DownloadIcon, RefreshIcon, SpinnerIcon } from './icons'
 import { appStats, lastDays, periods, total, type Period } from './stats'
 import { PageHeader, Shell, StatusPanel, TrendPill } from './ui'
 
 interface Data {
+  /** Daily histogram; each day also carries the per-app breakdown by name. */
   all: HistogramPoint[]
-  byApp: HistogramPoint[]
   loadedAt: Date
 }
 
@@ -27,8 +27,7 @@ export default function Dashboard({ session, onSession, onLogout }: Props) {
     setLoading(true)
     setError(null)
     const fetchAll = async (s: Session) => {
-      const [all, byApp] = await Promise.all([getHistogram(s), PACKAGE_IDS.length ? getHistogram(s, PACKAGE_IDS) : []])
-      setData({ all, byApp, loadedAt: new Date() })
+      setData({ all: await getHistogram(s), loadedAt: new Date() })
     }
     try {
       let current = await freshSession(session)
@@ -122,7 +121,7 @@ function Stats({ data }: { data: Data }) {
       </section>
 
       <WeekChart all={data.all} today={today} />
-      {PACKAGE_IDS.length > 0 && <AppsSection byApp={data.byApp} today={today} />}
+      <AppsSection all={data.all} today={today} />
     </>
   )
 }
@@ -188,9 +187,9 @@ function WeekChart({ all, today }: { all: HistogramPoint[]; today: Date }) {
   )
 }
 
-function AppsSection({ byApp, today }: { byApp: HistogramPoint[]; today: Date }) {
+function AppsSection({ all, today }: { all: HistogramPoint[]; today: Date }) {
   const { t, formatNumber } = useI18n()
-  const apps = useMemo(() => appStats(byApp, today), [byApp, today])
+  const apps = useMemo(() => appStats(all, today), [all, today])
 
   return (
     <section className="section" aria-labelledby="apps-title">
@@ -256,7 +255,7 @@ function DashboardSkeleton() {
         ))}
       </div>
       <div className="skeleton skeleton-panel section" />
-      {PACKAGE_IDS.length > 0 && <div className="skeleton skeleton-table section" />}
+      <div className="skeleton skeleton-table section" />
     </div>
   )
 }

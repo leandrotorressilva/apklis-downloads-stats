@@ -7,7 +7,7 @@ Sign in with your Apklis developer account (the one you use on `console.apklis.c
 - **Total downloads** of all your apps.
 - **Last 365, 30 and 7 days, and today**, each compared with the previous period of the same length.
 - **The last 7 days** day by day, with your best day highlighted.
-- **Today by app**: the apps you select that have downloads today, with today vs. yesterday and the last 7 days vs. the 7 before.
+- **Today by app**: every app with downloads today, with today vs. yesterday and the last 7 days vs. the 7 before.
 
 It is built with React, TypeScript and plain CSS — no UI framework, no tracking, no backend of its own. Spanish and English, light and dark themes.
 
@@ -17,7 +17,7 @@ The app talks directly to the official Apklis API (`api.apklis.cu`), the same on
 
 1. You sign in with your Apklis username and password. They are sent to the Apklis OAuth endpoint and **never stored**.
 2. Only the resulting session token is saved in your browser (`localStorage`) and refreshed automatically when it expires.
-3. Stats come from the `/v3/dashboard/histogram/` endpoint: once for the whole account and once broken down by the package ids you configure.
+3. Stats come from a single call to the `/v3/dashboard/histogram/` endpoint, which returns the daily downloads of the account broken down by app.
 
 The Apklis API does not allow cross-origin requests, so the browser calls `/apklis/*` on the same origin and that path is proxied to `https://api.apklis.cu/*`: by Vite during development and by the hosting provider in production (see [Deployment](#deployment)).
 
@@ -31,23 +31,10 @@ Requirements: [Node.js](https://nodejs.org) 20.19 or later.
 git clone https://github.com/leandrotorressilva/apklis-downloads-stats.git
 cd apklis-downloads-stats
 npm install
-cp .env.example .env.local   # then set your package ids, see Configuration
 npm run dev
 ```
 
-Open the URL printed by Vite (usually <http://localhost:5173>) and sign in.
-
-## Configuration
-
-Configuration happens at build time through environment variables (in `.env.local` locally, or in your hosting provider's settings).
-
-| Variable           | Description                                                                                           | Default |
-| ------------------ | ----------------------------------------------------------------------------------------------------- | ------- |
-| `VITE_APKLIS_APPS` | Comma-separated package ids of the apps for the **Today by app** table. Leave it empty to hide the table. | _empty_ |
-
-```dotenv
-VITE_APKLIS_APPS=com.example.app,com.example.another
-```
+Open the URL printed by Vite (usually <http://localhost:5173>) and sign in. There is nothing to configure.
 
 ## Scripts
 
@@ -64,7 +51,7 @@ The output in `dist/` is a static site. The only requirement is a rewrite from `
 
 ### Vercel
 
-Import the repository in Vercel and set `VITE_APKLIS_APPS` in the project's environment variables. The rewrites are already defined in [`vercel.json`](vercel.json).
+Import the repository in Vercel. The rewrites are already defined in [`vercel.json`](vercel.json).
 
 ### Other hosts
 

@@ -43,9 +43,9 @@ const es = {
   'chart.best': 'Mejor día',
 
 
-  'apps.title': 'Tus apps',
-  'apps.subtitle': '{count} descargas hoy entre las seleccionadas, de más a menos.',
-  'apps.subtitle_one': '{count} descarga hoy entre las seleccionadas.',
+  'apps.title': 'Estadísticas de hoy',
+  'apps.subtitle': '{count} descargas hoy entre todas tus apps, de más a menos.',
+  'apps.subtitle_one': '{count} descarga hoy entre todas tus apps.',
   'apps.app': 'App',
   'apps.today': 'Hoy',
   'apps.week': '7 días',
@@ -103,9 +103,9 @@ const en: Record<MessageKey, string> = {
   'chart.best': 'Best day',
 
 
-  'apps.title': 'Your apps',
-  'apps.subtitle': '{count} downloads today across the selected apps, from most to least.',
-  'apps.subtitle_one': '{count} download today across the selected apps.',
+  'apps.title': 'Today’s stats',
+  'apps.subtitle': '{count} downloads today across all your apps, from most to least.',
+  'apps.subtitle_one': '{count} download today across all your apps.',
   'apps.app': 'App',
   'apps.today': 'Today',
   'apps.week': '7 days',
